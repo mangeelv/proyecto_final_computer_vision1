@@ -18,6 +18,3 @@ def stream_video():
 
 if __name__ == "__main__":
     stream_video()
-
-
-print("Hola que tal???")
