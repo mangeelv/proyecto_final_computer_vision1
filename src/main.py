@@ -1,49 +1,28 @@
 from picamera2 import Picamera2
 import cv2
 import os
+import threading
 
-def stream_video():
-    # Inicializar Picamera2
-    picam = Picamera2()
-    
-    # Configurar la resolución y formato de la cámara
-    picam.preview_configuration.main.size = (1280, 720)  # Resolución
-    picam.preview_configuration.main.format = "RGB888"  # Formato de color
-    picam.preview_configuration.align()
-    picam.configure("preview")
-    picam.start()
+picam = Picamera2()
+picam.preview_configuration.main.size=(640, 360) # Esto es la resolución, se puede dividir entre 2
+picam.preview_configuration.main.format="RGB888"
+picam.preview_configuration.align()
+picam.configure("preview")
+picam.start()
 
-    # Contador para las imágenes capturadas
-    i = 0
-    
-    # Ruta para guardar las imágenes
-    save_path = "../images/calib_images"
-    os.makedirs(save_path, exist_ok=True)  # Asegurarse de que el directorio existe
 
-    print("Presiona 'q' para capturar una imagen y salir.")
-
+def photo_taker():
     while True:
-        # Capturar el frame actual
-        frame = picam.capture_array()
-
-        # Mostrar el frame en una ventana
-        cv2.imshow("PiCamera Video Stream", frame)
-
-        # Detectar la tecla presionada
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            # Ruta completa del archivo de la imagen
-            file_path = os.path.join(save_path, f"c_image{i}.jpg")
-            
-            # Guardar el frame actual
-            cv2.imwrite(file_path, frame)
-            print(f"Imagen guardada como: {file_path}")
-            break  # Salir del bucle después de guardar la imagen
+        entrada = input("Presiona Enter para hacer una detección...")
+        if entrada == "":
+            picam.start_and_capture_file("../images/temp.jpg")
         
-        i += 1
+if __name__ == "__main__":
 
-    # Liberar recursos
-    cv2.destroyAllWindows()
-    picam.stop()
-
-# Llamar a la función
-stream_video()
+    try:
+        photo_taker_thread = threading.Thread(target=photo_taker, daemon=True)  # Daemon=True para finalizar automáticamente con el programa
+        photo_taker_thread.start()
+        photo_taker_thread.join()
+    except KeyboardInterrupt:
+        pass
+    

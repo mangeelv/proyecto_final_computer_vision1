@@ -3,6 +3,7 @@ from typing import List
 import numpy as np
 import glob
 import os 
+import threading
 
 
 
@@ -73,6 +74,7 @@ def detect_number(cropped_resized_img):
             best_match_score = max_val
             best_match = i
     return best_match
+
 
 
 
