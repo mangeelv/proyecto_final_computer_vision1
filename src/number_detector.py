@@ -5,10 +5,10 @@ import glob
 import os 
 import threading
 
-
-
-
-
+def show_image(img: np.array, img_name: str = "Image"):
+    cv2.imshow(img_name,img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 def color_segment(img):
     hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     
@@ -20,6 +20,8 @@ def color_segment(img):
     
     # Crear la máscara para el verde claro
     green_mask = cv2.inRange(hsv_img, lower_green, upper_green)
+
+    
     
     # Aplicar la máscara para obtener solo el segmento verde
     green_segmented = cv2.bitwise_and(img, img, mask=green_mask)
@@ -79,9 +81,10 @@ def detect_number(cropped_resized_img):
 
 
 def make_detection():
-    img = cv2.imread(f'../img_temp.jpg')
+    img = cv2.imread(f'../images/temp.jpg')
     img = cv2.resize(img, (200,264), interpolation=cv2.INTER_LINEAR)
     green_mask,green_segmented = color_segment(img)
     resized_image = extract_number_from_image(green_mask, img)
     detected = detect_number(resized_image)
     print(detected)
+
