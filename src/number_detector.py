@@ -5,6 +5,8 @@ import glob
 import os 
 import threading
 
+track_window = None
+
 def show_image(img: np.array, img_name: str = "Image"):
     cv2.imshow(img_name,img)
     cv2.waitKey(0)
@@ -41,6 +43,7 @@ def color_segment(img):
 
 
 def extract_number_from_image(green_mask: np.array, img: np.array) -> np.array:
+    global track_window
     # Encontrar los contornos en la máscara roja
     contours, _ = cv2.findContours(green_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
@@ -50,10 +53,14 @@ def extract_number_from_image(green_mask: np.array, img: np.array) -> np.array:
         
         # Obtener la caja delimitadora (bounding box) del contorno más grande
         x, y, w, h = cv2.boundingRect(largest_contour)
-        
+
+
+        ## SEGUIMIENTO
+        track_window = (x, y, w, h)
+
         # Recortar la imagen usando la caja delimitadora
         cropped_img = img[y:y+h, x:x+w]
-        return cv2.resize(cropped_img, (200,264), interpolation=cv2.INTER_LINEAR)
+        return cv2.resize(cropped_img, (264,264), interpolation=cv2.INTER_LINEAR)
     else:
         # Si no se encuentra un contorno, devolver la imagen original
         return img
@@ -82,9 +89,10 @@ def detect_number(cropped_resized_img):
 
 def make_detection():
     img = cv2.imread(f'../images/temp.jpg')
-    img = cv2.resize(img, (200,264), interpolation=cv2.INTER_LINEAR)
+    img = cv2.resize(img, (264,264), interpolation=cv2.INTER_LINEAR)
     green_mask,green_segmented = color_segment(img)
     resized_image = extract_number_from_image(green_mask, img)
+    cv2.imwrite('../images/cropped.jpg', resized_image)
     detected = detect_number(resized_image)
-    print(detected)
+    return detected
 
