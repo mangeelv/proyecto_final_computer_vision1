@@ -1,9 +1,6 @@
 import cv2
-from typing import List
+
 import numpy as np
-import glob
-import os 
-import threading
 
 track_window = None
 
