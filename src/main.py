@@ -59,8 +59,8 @@ def stream_video():
 
 def photo_taker():
     '''Hilo encargado de tomar fotos y guardar imágenes para detecciones'''
+    global detected
     while True:
-        global detected
         picam.capture_file("../images/temp.jpg")
         detected = nd.make_detection()
 
@@ -76,7 +76,7 @@ def password():
             introduced_password = introduced_password[:-1]
         if entrada == "c":
             if introduced_password == correct_password:
-                print("¡The password is correct!")
+                print("The password is correct!")
                 entrada = input('Press r to reset the password (or any other key to maintain it): ')
                 if entrada == "r":
                     correct_password = None
